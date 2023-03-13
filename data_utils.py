@@ -58,8 +58,24 @@ def resize_with_padding(image:np.ndarray, target_h:int, target_w:int) -> np.ndar
     )
     return padded_image
 
-
+def conert2hsv(image:np.ndarray, normalize:bool=True) -> np.ndarray:
+    # image : np.ndarray, RGB
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
     
+    if normalize:
+        # 채널 분리
+        h, s, v = cv2.split(hsv)
+        
+        # 각 채널을 0 ~ 1 범위로 정규화
+        h = cv2.normalize(h, None, 0, 1, cv2.NORM_MINMAX)
+        s = cv2.normalize(s, None, 0, 1, cv2.NORM_MINMAX)
+        v = cv2.normalize(v, None, 0, 1, cv2.NORM_MINMAX)
+        
+        # 정규화된 채널을 다시 합침
+        hsv = cv2.merge((h, s, v))
+    
+    return hsv
+
 if __name__ == '__main__':
     sample_video_path = "/home/junghyun/Desktop/wei/mvit_transfer_learning/data/Celeb-DF-V1/Celeb-real/id0_0000.mp4"
     vid_frames = read_vid(sample_video_path)
